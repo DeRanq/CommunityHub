@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Neuer Beitrag – Forum{% endblock %}
+{% block page_title %}✏️ Neuer Beitrag{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('forum.uebersicht') }}" class="btn btn-outline btn-sm">← Zurück</a>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:700px;">
+  <div class="card-header"><h2>Beitrag erstellen</h2></div>
+  <div class="card-body">
+    <form method="POST">
+      <div class="form-group">
+        <label for="titel">Titel *</label>
+        <input type="text" id="titel" name="titel" class="form-control"
+               placeholder="Worum geht es?" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label for="kategorie">Kategorie *</label>
+        <select id="kategorie" name="kategorie" class="form-control">
+          {% for kat in kategorien %}
+            <option value="{{ kat }}">{{ kat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="inhalt">Inhalt *</label>
+        <textarea id="inhalt" name="inhalt" class="form-control" rows="8"
+                  placeholder="Schreib deinen Beitrag..." required></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary">✏️ Beitrag veröffentlichen</button>
+        <a href="{{ url_for('forum.uebersicht') }}" class="btn btn-outline">Abbrechen</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

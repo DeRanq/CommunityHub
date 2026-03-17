@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Forum – CommunityHub{% endblock %}
+{% block page_title %}💬 Forum{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('forum.neu') }}" class="btn btn-primary btn-sm">✏️ Neuer Beitrag</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Kategorie-Filter -->
+<div class="filter-bar">
+  <a href="{{ url_for('forum.uebersicht') }}"
+     class="filter-btn {% if not aktive_kategorie %}active{% endif %}">Alle</a>
+  {% for kat in kategorien %}
+    <a href="{{ url_for('forum.uebersicht', kategorie=kat) }}"
+       class="filter-btn {% if aktive_kategorie == kat %}active{% endif %}">{{ kat }}</a>
+  {% endfor %}
+</div>
+
+<!-- Beitragsliste -->
+{% if beitraege %}
+  <div class="beitrag-liste">
+    {% for b in beitraege %}
+      <div class="beitrag-item">
+        <div style="font-size:1.5rem;padding-top:2px;">💬</div>
+        <div class="beitrag-meta">
+          <h3><a href="{{ url_for('forum.detail', beitrag_id=b.id) }}">{{ b.titel }}</a></h3>
+          <div class="beitrag-info">
+            <span class="badge badge-blue">{{ b.kategorie }}</span>
+            <span>👤 {{ b.autor.username }}</span>
+            <span>🕐 {{ b.erstellt_am.strftime('%d.%m.%Y %H:%M') }}</span>
+            <span>💬 {{ b.kommentare|length }} Kommentar{% if b.kommentare|length != 1 %}e{% endif %}</span>
+          </div>
+        </div>
+        <a href="{{ url_for('forum.detail', beitrag_id=b.id) }}"
+           class="btn btn-outline btn-sm" style="flex-shrink:0;">Lesen →</a>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="icon">💬</div>
+    <p><strong>Noch keine Beiträge</strong></p>
+    <p style="margin-top:6px;">Sei der Erste und erstelle einen Beitrag!</p>
+    <a href="{{ url_for('forum.neu') }}" class="btn btn-primary" style="margin-top:16px;">
+      ✏️ Beitrag erstellen
+    </a>
+  </div>
+{% endif %}
+
+{% endblock %}

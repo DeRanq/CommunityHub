@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}CommunityHub{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+{% if current_user.is_authenticated %}
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <h1>🏘️ CommunityHub</h1>
+      <span>Community-Plattform</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Forum</div>
+      <a href="{{ url_for('forum.uebersicht') }}"
+         class="nav-link {% if request.blueprint == 'forum' %}active{% endif %}">
+        <span class="icon">💬</span> Forum
+      </a>
+      <a href="{{ url_for('forum.neu') }}" class="nav-link">
+        <span class="icon">✏️</span> Beitrag erstellen
+      </a>
+
+      <div class="nav-section">Archiv</div>
+      <a href="{{ url_for('archiv.uebersicht') }}"
+         class="nav-link {% if request.blueprint == 'archiv' %}active{% endif %}">
+        <span class="icon">📁</span> Archiv
+      </a>
+      <a href="{{ url_for('archiv.datei_hochladen') }}" class="nav-link">
+        <span class="icon">⬆️</span> Datei hochladen
+      </a>
+      <a href="{{ url_for('archiv.link_neu') }}" class="nav-link">
+        <span class="icon">🔗</span> Link speichern
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="avatar">{{ current_user.username[0].upper() }}</div>
+      <div class="sidebar-user-info">
+        <strong>{{ current_user.username }}</strong>
+        <a href="{{ url_for('auth.logout') }}">Abmelden</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Hauptbereich -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">{% block page_title %}{% endblock %}</span>
+      <div style="display:flex;gap:10px;align-items:center;">
+        {% block topbar_actions %}{% endblock %}
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="alerts">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script>
+  // Mobile Sidebar Toggle
+  const sidebar = document.getElementById('sidebar');
+  function toggleSidebar() {
+    sidebar?.classList.toggle('open');
+  }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

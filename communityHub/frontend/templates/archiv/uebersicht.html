@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Archiv – CommunityHub{% endblock %}
+{% block page_title %}📁 Archiv{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('archiv.datei_hochladen') }}" class="btn btn-outline btn-sm">⬆️ Datei hochladen</a>
+  <a href="{{ url_for('archiv.link_neu') }}" class="btn btn-primary btn-sm">🔗 Link speichern</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Dokumente -->
+<h2 style="font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:14px;">
+  📄 Dokumente ({{ dateien|length }})
+</h2>
+
+{% if dateien %}
+  <div class="archiv-grid" style="margin-bottom:36px;">
+    {% for d in dateien %}
+      <div class="archiv-item">
+        <div class="archiv-item-icon">
+          {% if d.originaldatei.endswith('.pdf') %}📕
+          {% elif d.originaldatei.endswith(('.doc','docx')) %}📘
+          {% elif d.originaldatei.endswith(('.png','.jpg','.jpeg')) %}🖼️
+          {% elif d.originaldatei.endswith('.xlsx') %}📗
+          {% else %}📄{% endif %}
+        </div>
+        <h3>{{ d.name }}</h3>
+        {% if d.beschreibung %}
+          <p>{{ d.beschreibung }}</p>
+        {% else %}
+          <p style="font-style:italic;">Keine Beschreibung</p>
+        {% endif %}
+        <div class="archiv-item-footer">
+          <span class="archiv-item-meta">
+            👤 {{ d.autor.username }} · {{ d.hochgeladen_am.strftime('%d.%m.%Y') }}
+          </span>
+          <div style="display:flex;gap:6px;">
+            <a href="{{ url_for('archiv.datei_download', datei_id=d.id) }}"
+               class="btn btn-outline btn-sm">⬇️</a>
+            {% if d.user_id == current_user.id %}
+              <form method="POST" action="{{ url_for('archiv.datei_loeschen', datei_id=d.id) }}"
+                    onsubmit="return confirm('Datei löschen?');">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state" style="margin-bottom:32px;">
+    <div class="icon">📄</div>
+    <p>Noch keine Dokumente hochgeladen.</p>
+    <a href="{{ url_for('archiv.datei_hochladen') }}" class="btn btn-primary" style="margin-top:14px;">
+      ⬆️ Erste Datei hochladen
+    </a>
+  </div>
+{% endif %}
+
+<!-- Links -->
+<h2 style="font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:14px;">
+  🔗 Links ({{ links|length }})
+</h2>
+
+{% if links %}
+  <div class="archiv-grid">
+    {% for l in links %}
+      <div class="archiv-item">
+        <div class="archiv-item-icon">🔗</div>
+        <h3>{{ l.titel }}</h3>
+        {% if l.beschreibung %}
+          <p>{{ l.beschreibung }}</p>
+        {% else %}
+          <p style="font-style:italic;">Keine Beschreibung</p>
+        {% endif %}
+        <p style="font-size:.78rem;color:var(--blue4);word-break:break-all;">{{ l.url }}</p>
+        <div class="archiv-item-footer">
+          <span class="archiv-item-meta">
+            👤 {{ l.autor.username }} · {{ l.gespeichert_am.strftime('%d.%m.%Y') }}
+          </span>
+          <div style="display:flex;gap:6px;">
+            <a href="{{ l.url }}" target="_blank" rel="noopener"
+               class="btn btn-outline btn-sm">↗️ Öffnen</a>
+            {% if l.user_id == current_user.id %}
+              <form method="POST" action="{{ url_for('archiv.link_loeschen', link_id=l.id) }}"
+                    onsubmit="return confirm('Link löschen?');">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="icon">🔗</div>
+    <p>Noch keine Links gespeichert.</p>
+    <a href="{{ url_for('archiv.link_neu') }}" class="btn btn-primary" style="margin-top:14px;">
+      🔗 Ersten Link speichern
+    </a>
+  </div>
+{% endif %}
+
+{% endblock %}
